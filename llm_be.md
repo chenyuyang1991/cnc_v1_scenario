@@ -159,7 +159,45 @@ backend/
 #### 優化配置端點
 - **端點**: `GET /optimization/config`
 - **功能**: 獲取優化配置選項
-- **業務邏輯**: 提供機台、材料、刀具、優化目標和安全限制的預設配置
+- **業務邏輯**: 提供超參數設定和子程式配置的預設值
+- **返回格式**:
+```json
+{
+  "hyper_params": {
+    "use_cnc_knowledge_base": true,
+    "percentile_threshold": 0.95,
+    "short_threshold": 0.2,
+    "ae_thres": 0.1,
+    "ap_thres": 0.1,
+    "turning_G01_thres": 0.5,
+    "pre_turning_thres": 1,
+    "multiplier_max": 1.5,
+    "multiplier_min": 1.0,
+    "multiplier_air": 2.0,
+    "apply_finishing": 1,
+    "apply_ban_n": 1,
+    "multiplier_finishing": 1.2,
+    "target_pwc_strategy": "按刀具",
+    "max_increase_step": 2000.0,
+    "min_air_speed": 0.0,
+    "max_air_speed": 48000.0
+  },
+  "sub_programs": {
+    "5601": {
+      "function": "內側開粗、上下左右Pocket精修",
+      "tool": "",
+      "tool_spec": "",
+      "finishing": 0,
+      "apply_afc": 1,
+      "apply_air": 1,
+      "apply_turning": 1,
+      "multiplier_max": 1.5,
+      "ban_n": ["N10", "N20", "N40"],
+      "ban_row": []
+    }
+  }
+}
+```
 
 ### 6. 檔案處理 (`/files`)
 

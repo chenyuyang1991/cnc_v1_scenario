@@ -1,5 +1,5 @@
 import { ref, reactive } from 'vue'
-import { projectAPI, configAPI, scenarioAPI, simulationAPI } from '../services/apiService'
+import { projectAPI, configAPI, scenarioAPI, simulationAPI, optimizationAPI } from '../services/apiService'
 
 // 應用程式狀態
 export const currentView = ref('landing')
@@ -38,6 +38,7 @@ export const projects = ref([])
 export const recentScenarios = ref([])
 export const simulations = ref([])
 export const machines = ref([])
+export const optimizationConfig = ref({})
 
 // 加載狀態
 export const isLoading = ref(false)
@@ -45,11 +46,8 @@ export const error = ref(null)
 
 // 配置標籤頁
 export const configTabs = ref([
-  { id: 'machine', name: '機台' },
-  { id: 'material', name: '材料' },
-  { id: 'tooling', name: '刀具' },
-  { id: 'optimization', name: '優化' },
-  { id: 'safety', name: '安全' }
+  { id: 'hyper_params', name: '參數設定' },
+  { id: 'sub_programs', name: '子程式設定' }
 ])
 
 // 結果標籤頁
@@ -125,6 +123,21 @@ export const loadSimulations = async () => {
   }
 }
 
+export const loadOptimizationConfig = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await optimizationAPI.getOptimizationConfig()
+    optimizationConfig.value = response || {}
+  } catch (error) {
+    console.error('Failed to load optimization config:', error)
+    error.value = 'Failed to load optimization config'
+    optimizationConfig.value = {}
+  } finally {
+    isLoading.value = false
+  }
+}
+
 // 初始化數據
 export const initializeData = async () => {
   try {
@@ -134,7 +147,8 @@ export const initializeData = async () => {
       loadProjects(),
       loadMachines(),
       loadScenarios(),
-      loadSimulations()
+      loadSimulations(),
+      loadOptimizationConfig()
     ])
   } catch (error) {
     console.error('Failed to initialize data:', error)

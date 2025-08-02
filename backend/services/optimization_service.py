@@ -83,40 +83,86 @@ def get_optimization_results(optimization_id: str) -> Optional[OptimizationResul
 
 def get_optimization_config() -> OptimizationConfig:
     config = {
-        "machine": {
-            "spindle_speed": {"min": 2000, "max": 5000, "default": 3000, "unit": "RPM"},
-            "feed_rate": {"min": 300, "max": 800, "default": 500, "unit": "mm/min"},
-            "max_spindle_speed": 5000,
-            "max_feed_rate": 1000
+        "hyper_params": {
+            "use_cnc_knowledge_base": True,
+            "percentile_threshold": 0.95,
+            "short_threshold": 0.2,
+            "ae_thres": 0.1,
+            "ap_thres": 0.1,
+            "turning_G01_thres": 0.5,
+            "pre_turning_thres": 1,
+            "multiplier_max": 1.5,
+            "multiplier_min": 1.0,
+            "multiplier_air": 2.0,
+            "apply_finishing": 1,
+            "apply_ban_n": 1,
+            "multiplier_finishing": 1.2,
+            "target_pwc_strategy": "按刀具",
+            "max_increase_step": 2000.0,
+            "min_air_speed": 0.0,
+            "max_air_speed": 48000.0
         },
-        "material": {
-            "types": [
-                {"id": "al6061", "name": "鋁合金 6061-T6", "hardness": 25},
-                {"id": "steel1018", "name": "碳鋼 1018", "hardness": 35},
-                {"id": "ss304", "name": "不鏽鋼 304", "hardness": 45}
-            ],
-            "default": "al6061"
-        },
-        "tooling": {
-            "types": [
-                {"id": "endmill_flat", "name": "端銑刀 - 平底", "diameter_range": [3, 20]},
-                {"id": "endmill_ball", "name": "端銑刀 - 球頭", "diameter_range": [1, 16]},
-                {"id": "facemill", "name": "面銑刀", "diameter_range": [25, 100]}
-            ],
-            "default_diameter": 6
-        },
-        "optimization": {
-            "objectives": [
-                {"id": "time", "name": "最小化加工時間", "priority": "high"},
-                {"id": "quality", "name": "優化表面品質", "priority": "medium"},
-                {"id": "tool_life", "name": "延長刀具壽命", "priority": "medium"}
-            ]
-        },
-        "safety": {
-            "max_spindle_speed": 5000,
-            "max_feed_rate": 1000,
-            "collision_detection": True,
-            "emergency_stop": True
+        "sub_programs": {
+            "5601": {
+                "function": "內側開粗、上下左右Pocket精修",
+                "tool": "",
+                "tool_spec": "",
+                "finishing": 0,
+                "apply_afc": 1,
+                "apply_air": 1,
+                "apply_turning": 1,
+                "multiplier_max": 1.5,
+                "ban_n": ["N10", "N20", "N40", "N30", "N50", "N60", "N70", "N80", "N90"],
+                "ban_row": []
+            },
+            "5202": {
+                "function": "頂面開粗",
+                "tool": "",
+                "tool_spec": "",
+                "finishing": 0,
+                "apply_afc": 1,
+                "apply_air": 1,
+                "apply_turning": 1,
+                "multiplier_max": 1.5,
+                "ban_n": [],
+                "ban_row": []
+            },
+            "5214": {
+                "function": "耳機孔避位及下避位槽T型槽加工",
+                "tool": "",
+                "tool_spec": "",
+                "finishing": 0,
+                "apply_afc": 1,
+                "apply_air": 1,
+                "apply_turning": 1,
+                "multiplier_max": 1.5,
+                "ban_n": [],
+                "ban_row": []
+            },
+            "5615": {
+                "function": "下避位槽精修&PB裝配區加工",
+                "tool": "",
+                "tool_spec": "",
+                "finishing": 1,
+                "apply_afc": 1,
+                "apply_air": 1,
+                "apply_turning": 1,
+                "multiplier_max": 1.2,
+                "ban_n": [],
+                "ban_row": []
+            },
+            "5516": {
+                "function": "Heatsink-Pocket精修&上下避位槽清角及電池槽加工",
+                "tool": "",
+                "tool_spec": "",
+                "finishing": 1,
+                "apply_afc": 1,
+                "apply_air": 1,
+                "apply_turning": 1,
+                "multiplier_max": 1.2,
+                "ban_n": [],
+                "ban_row": []
+            }
         }
     }
     

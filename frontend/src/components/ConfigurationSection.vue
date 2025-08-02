@@ -30,87 +30,139 @@
         
         <!-- Tab Content -->
         <div class="flex-1 pl-6">
-          <div v-if="activeConfigTab === 'machine'" class="space-y-6">
+          <!-- 參數設定 Tab -->
+          <div v-if="activeConfigTab === 'hyper_params'" class="space-y-6">
             <div class="grid grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">主軸轉速 (RPM)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="3000" />
-                <p class="text-xs text-gray-500 mt-1">建議：2000-5000 RPM</p>
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">進給速度 (mm/min)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="500" />
-                <p class="text-xs text-gray-500 mt-1">建議：300-800 mm/min</p>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="activeConfigTab === 'material'" class="space-y-6">
-            <div class="grid grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">材料類型</label>
-                <select class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none">
-                  <option>鋁合金 6061-T6</option>
-                  <option>碳鋼 1018</option>
-                  <option>不鏽鋼 304</option>
+              <div v-for="(value, key) in optimizationConfig.hyper_params" :key="key">
+                <label class="block text-sm text-gray-400 mb-2">{{ getParamLabel(key) }}</label>
+                <input 
+                  v-if="typeof value === 'number'"
+                  v-model="optimizationConfig.hyper_params[key]"
+                  type="number" 
+                  :step="getParamStep(key)"
+                  class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                />
+                <select 
+                  v-else-if="typeof value === 'boolean'"
+                  v-model="optimizationConfig.hyper_params[key]"
+                  class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none"
+                >
+                  <option :value="true">是</option>
+                  <option :value="false">否</option>
                 </select>
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">硬度 (HRC)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="25" />
-              </div>
-            </div>
-          </div>
-          
-          <div v-else-if="activeConfigTab === 'tooling'" class="space-y-6">
-            <div class="grid grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">刀具類型</label>
-                <select class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none">
-                  <option>端銑刀 - 平底</option>
-                  <option>端銑刀 - 球頭</option>
-                  <option>面銑刀</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">刀具直徑 (mm)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="6" />
+                <input 
+                  v-else
+                  v-model="optimizationConfig.hyper_params[key]"
+                  type="text" 
+                  class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                />
+                <p class="text-xs text-gray-500 mt-1">{{ getParamDescription(key) }}</p>
               </div>
             </div>
           </div>
           
-          <div v-else-if="activeConfigTab === 'optimization'" class="space-y-6">
-            <div class="bg-gray-800 rounded-lg p-4">
-              <h5 class="text-white font-medium mb-3">優化目標</h5>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <input type="checkbox" id="time-opt" class="bg-black border-gray-800" checked />
-                    <label for="time-opt" class="text-sm text-gray-300">最小化加工時間</label>
-                  </div>
-                  <div class="text-xs text-gray-500">優先級：高</div>
+          <!-- 子程式設定 Tab -->
+          <div v-else-if="activeConfigTab === 'sub_programs'" class="space-y-6">
+            <div class="space-y-4">
+              <div 
+                v-for="(program, programId) in optimizationConfig.sub_programs" 
+                :key="programId"
+                class="bg-gray-800 rounded-lg p-4"
+              >
+                <div class="flex items-center justify-between mb-3">
+                  <h5 class="text-white font-medium">{{ programId }} - {{ program.function }}</h5>
+                  <button 
+                    @click="removeSubProgram(programId)"
+                    class="text-red-400 hover:text-red-300 text-sm"
+                  >
+                    刪除
+                  </button>
                 </div>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <input type="checkbox" id="quality-opt" class="bg-black border-gray-800" />
-                    <label for="quality-opt" class="text-sm text-gray-300">優化表面品質</label>
+                
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">功能描述</label>
+                    <input 
+                      v-model="program.function"
+                      type="text" 
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                    />
                   </div>
-                  <div class="text-xs text-gray-500">優先級：中</div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">刀具</label>
+                    <input 
+                      v-model="program.tool"
+                      type="text" 
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">刀具規格</label>
+                    <input 
+                      v-model="program.tool_spec"
+                      type="text" 
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">精加工</label>
+                    <select 
+                      v-model="program.finishing"
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none"
+                    >
+                      <option :value="0">否</option>
+                      <option :value="1">是</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">應用AFC</label>
+                    <select 
+                      v-model="program.apply_afc"
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none"
+                    >
+                      <option :value="0">否</option>
+                      <option :value="1">是</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">應用Air</label>
+                    <select 
+                      v-model="program.apply_air"
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none"
+                    >
+                      <option :value="0">否</option>
+                      <option :value="1">是</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">應用Turning</label>
+                    <select 
+                      v-model="program.apply_turning"
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none"
+                    >
+                      <option :value="0">否</option>
+                      <option :value="1">是</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm text-gray-400 mb-2">最大倍數</label>
+                    <input 
+                      v-model="program.multiplier_max"
+                      type="number" 
+                      step="0.1"
+                      class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" 
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          
-          <div v-else-if="activeConfigTab === 'safety'" class="space-y-6">
-            <div class="grid grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">最大主軸轉速 (RPM)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="5000" />
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">最大進給速度 (mm/min)</label>
-                <input type="number" class="w-full px-4 py-3 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none" value="1000" />
-              </div>
+              
+              <!-- 添加新子程式按鈕 -->
+              <button 
+                @click="addSubProgram"
+                class="w-full p-4 border-2 border-dashed border-gray-700 rounded-lg text-gray-400 hover:border-gray-600 hover:text-gray-300 transition-colors"
+              >
+                + 添加新子程式
+              </button>
             </div>
           </div>
         </div>
@@ -121,7 +173,7 @@
           取消
         </button>
         <button 
-          @click="$emit('run-optimization')"
+          @click="runOptimization"
           class="px-6 py-2 bg-white text-black rounded font-medium hover:bg-gray-100 transition-colors"
         >
           執行優化
@@ -132,18 +184,119 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { X } from 'lucide-vue-next'
 
-defineEmits(['close', 'run-optimization'])
+const props = defineProps({
+  optimizationConfig: {
+    type: Object,
+    required: true
+  }
+})
 
-const activeConfigTab = ref('machine')
+const emit = defineEmits(['close', 'run-optimization'])
+
+const activeConfigTab = ref('hyper_params')
 
 const configTabs = ref([
-  { id: 'machine', name: '機台' },
-  { id: 'material', name: '材料' },
-  { id: 'tooling', name: '刀具' },
-  { id: 'optimization', name: '優化' },
-  { id: 'safety', name: '安全' }
+  { id: 'hyper_params', name: '參數設定' },
+  { id: 'sub_programs', name: '子程式設定' }
 ])
+
+// 參數標籤映射
+const paramLabels = {
+  use_cnc_knowledge_base: '使用CNC知識庫',
+  percentile_threshold: '百分位閾值',
+  short_threshold: '短閾值',
+  ae_thres: 'AE閾值',
+  ap_thres: 'AP閾值',
+  turning_G01_thres: 'Turning G01閾值',
+  pre_turning_thres: '預Turning閾值',
+  multiplier_max: '最大倍數',
+  multiplier_min: '最小倍數',
+  multiplier_air: 'Air倍數',
+  apply_finishing: '應用精加工',
+  apply_ban_n: '應用禁止N',
+  multiplier_finishing: '精加工倍數',
+  target_pwc_strategy: '目標PWC策略',
+  max_increase_step: '最大增加步長',
+  min_air_speed: '最小Air速度',
+  max_air_speed: '最大Air速度'
+}
+
+// 參數描述映射
+const paramDescriptions = {
+  use_cnc_knowledge_base: '是否使用CNC知識庫進行優化',
+  percentile_threshold: '百分位閾值，用於統計分析',
+  short_threshold: '短閾值，用於快速判斷',
+  ae_thres: 'AE（聲發射）閾值',
+  ap_thres: 'AP（進刀深度）閾值',
+  turning_G01_thres: 'Turning G01指令閾值',
+  pre_turning_thres: '預Turning閾值',
+  multiplier_max: '最大倍數限制',
+  multiplier_min: '最小倍數限制',
+  multiplier_air: 'Air移動倍數',
+  apply_finishing: '是否應用精加工策略',
+  apply_ban_n: '是否應用禁止N指令',
+  multiplier_finishing: '精加工倍數',
+  target_pwc_strategy: '目標PWC（功率控制）策略',
+  max_increase_step: '最大增加步長',
+  min_air_speed: '最小Air移動速度',
+  max_air_speed: '最大Air移動速度'
+}
+
+// 參數步長映射
+const paramSteps = {
+  percentile_threshold: 0.01,
+  short_threshold: 0.1,
+  ae_thres: 0.01,
+  ap_thres: 0.01,
+  turning_G01_thres: 0.1,
+  pre_turning_thres: 0.1,
+  multiplier_max: 0.1,
+  multiplier_min: 0.1,
+  multiplier_air: 0.1,
+  apply_finishing: 1,
+  apply_ban_n: 1,
+  multiplier_finishing: 0.1,
+  max_increase_step: 100,
+  min_air_speed: 100,
+  max_air_speed: 1000
+}
+
+const getParamLabel = (key) => {
+  return paramLabels[key] || key
+}
+
+const getParamDescription = (key) => {
+  return paramDescriptions[key] || ''
+}
+
+const getParamStep = (key) => {
+  return paramSteps[key] || 1
+}
+
+const addSubProgram = () => {
+  const newId = `5${Math.floor(Math.random() * 900) + 100}`
+  props.optimizationConfig.sub_programs[newId] = {
+    function: '新子程式',
+    tool: '',
+    tool_spec: '',
+    finishing: 0,
+    apply_afc: 1,
+    apply_air: 1,
+    apply_turning: 1,
+    multiplier_max: 1.5,
+    ban_n: [],
+    ban_row: []
+  }
+}
+
+const removeSubProgram = (programId) => {
+  delete props.optimizationConfig.sub_programs[programId]
+}
+
+const runOptimization = () => {
+  emit('run-optimization', props.optimizationConfig)
+}
 </script> 

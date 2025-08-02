@@ -46,6 +46,7 @@
           :active-mode="activeMode"
           :messages="messages"
           :uploaded-files="uploadedFiles"
+          :optimization-config="optimizationConfig"
           @send-message="handleSendMessage"
           @file-upload="handleFileUpload"
           @file-remove="removeFile"
@@ -83,7 +84,7 @@ import {
   selectedScenarioForIteration, messages, uploadedFiles, showProjectModal, 
   showIterationModal, selectedProject, selectedMachine, scenarioName, 
   iterationType, projects, recentScenarios, simulations, currentScenario,
-  machines, initializeData
+  machines, initializeData, optimizationConfig
 } from './stores/appStore'
 
 import LandingPage from './components/LandingPage.vue'
@@ -284,12 +285,15 @@ const closeConfig = () => {
   }
 }
 
-const runOptimization = () => {
+const runOptimization = (config) => {
   messages.value.push({
     id: messages.value.length + 1,
     type: 'user',
     content: '使用目前配置執行優化'
   })
+  
+  // 記錄配置數據
+  console.log('Optimization config:', config)
   
   setTimeout(() => {
     messages.value.push({

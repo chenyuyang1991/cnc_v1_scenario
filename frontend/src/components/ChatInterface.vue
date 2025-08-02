@@ -49,6 +49,7 @@
               <!-- Configuration Section -->
               <ConfigurationSection 
                 v-if="message.showConfig"
+                :optimization-config="optimizationConfig"
                 @close="closeConfig"
                 @run-optimization="runOptimization"
               />
@@ -104,7 +105,11 @@ const props = defineProps({
   },
   uploadedFiles: {
     type: Array,
-    default: () => []
+    required: true
+  },
+  optimizationConfig: {
+    type: Object,
+    required: true
   }
 })
 

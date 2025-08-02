@@ -17,8 +17,5 @@ class OptimizationResults(BaseModel):
     created: str
 
 class OptimizationConfig(BaseModel):
-    machine: Dict[str, Any]
-    material: Dict[str, Any]
-    tooling: Dict[str, Any]
-    optimization: Dict[str, Any]
-    safety: Dict[str, Any]
+    hyper_params: Dict[str, Any]
+    sub_programs: Dict[str, Any]

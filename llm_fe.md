@@ -707,6 +707,70 @@
 
 ---
 
+## 10. 配置設定組件 (ConfigurationSection.vue)
+
+### 組件位置
+- **文件**: `frontend/src/components/ConfigurationSection.vue`
+- **功能**: 優化參數設定和子程式配置
+- **API 依賴**: `/optimization/config`
+
+### UI 元素
+- 參數設定標籤頁：超參數配置
+- 子程式設定標籤頁：動態子程式管理
+- 配置保存和優化執行
+
+### 配置數據結構
+```javascript
+{
+  hyper_params: {
+    use_cnc_knowledge_base: boolean,
+    percentile_threshold: number,
+    short_threshold: number,
+    ae_thres: number,
+    ap_thres: number,
+    turning_G01_thres: number,
+    pre_turning_thres: number,
+    multiplier_max: number,
+    multiplier_min: number,
+    multiplier_air: number,
+    apply_finishing: number,
+    apply_ban_n: number,
+    multiplier_finishing: number,
+    target_pwc_strategy: string,
+    max_increase_step: number,
+    min_air_speed: number,
+    max_air_speed: number
+  },
+  sub_programs: {
+    [programId]: {
+      function: string,
+      tool: string,
+      tool_spec: string,
+      finishing: number,
+      apply_afc: number,
+      apply_air: number,
+      apply_turning: number,
+      multiplier_max: number,
+      ban_n: string[],
+      ban_row: string[]
+    }
+  }
+}
+```
+
+### 事件處理
+```javascript
+// 輸入事件
+@close()
+@run-optimization(config)
+// config: 完整的配置數據
+
+// 輸出事件
+// 向上傳遞給父組件
+```
+
+---
+
 ## 狀態管理架構
 
 ### 主要狀態 (appStore.js)
