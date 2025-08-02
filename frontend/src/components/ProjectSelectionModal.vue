@@ -16,9 +16,9 @@
           <label class="block text-sm text-gray-400 mb-2">機台</label>
           <select v-model="selectedMachine" class="w-full px-3 py-2 bg-black border border-gray-800 rounded text-white text-sm focus:border-gray-600 focus:outline-none">
             <option value="">選擇機台...</option>
-            <option value="cnc-001">CNC-001 (Haas VF-2)</option>
-            <option value="cnc-002">CNC-002 (Mazak VTC-200)</option>
-            <option value="cnc-003">CNC-003 (DMG Mori NHX-4000)</option>
+            <option v-for="machine in machines" :key="machine.id" :value="machine.id">
+              {{ machine.name }}
+            </option>
           </select>
         </div>
         <div v-if="selectedMachine">
@@ -59,6 +59,10 @@ const props = defineProps({
     required: true
   },
   projects: {
+    type: Array,
+    required: true
+  },
+  machines: {
     type: Array,
     required: true
   }

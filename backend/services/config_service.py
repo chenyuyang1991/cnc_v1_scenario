@@ -4,8 +4,8 @@ from typing import Dict, Any
 def get_machine_config() -> MachineConfig:
     machines = [
         {
-            "id": "cnc-001",
-            "name": "Haas VF-2",
+            "id": "B55-1 D22",
+            "name": "B55-1 D22",
             "type": "milling",
             "specs": {
                 "max_spindle_speed": 8000,
@@ -18,8 +18,8 @@ def get_machine_config() -> MachineConfig:
             }
         },
         {
-            "id": "cnc-002", 
-            "name": "Mazak VTC-200",
+            "id": "D45-3 A22", 
+            "name": "D45-3 A22",
             "type": "milling",
             "specs": {
                 "max_spindle_speed": 12000,

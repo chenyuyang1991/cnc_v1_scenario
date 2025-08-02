@@ -63,6 +63,7 @@
     <ProjectSelectionModal 
       :show="showProjectModal"
       :projects="projects"
+      :machines="machines"
       @close="showProjectModal = false"
       @create="createScenario"
     />
@@ -81,7 +82,8 @@ import {
   currentView, selectedPlatform, activeMode, showSimulationConfig, 
   selectedScenarioForIteration, messages, uploadedFiles, showProjectModal, 
   showIterationModal, selectedProject, selectedMachine, scenarioName, 
-  iterationType, projects, recentScenarios, simulations, currentScenario 
+  iterationType, projects, recentScenarios, simulations, currentScenario,
+  machines, initializeData
 } from './stores/appStore'
 
 import LandingPage from './components/LandingPage.vue'
@@ -92,6 +94,9 @@ import IterationSelection from './components/IterationSelection.vue'
 import ChatInterface from './components/ChatInterface.vue'
 import ProjectSelectionModal from './components/ProjectSelectionModal.vue'
 import IterationTypeModal from './components/IterationTypeModal.vue'
+
+// 初始化數據
+initializeData()
 
 // Navigation
 const navigateTo = (view, platform = '') => {
@@ -322,7 +327,7 @@ const implementOptimization = () => {
       simulations.value.unshift({
         id: `SIM-${String(simulations.value.length + 1).padStart(3, '0')}`,
         name: currentScenario.value?.name || '新模擬',
-        project: currentScenario.value?.project || 'PRJ-001',
+        project: currentScenario.value?.project || 'X1111-CNC2',
         status: 'completed',
         created: new Date().toISOString().split('T')[0]
       })

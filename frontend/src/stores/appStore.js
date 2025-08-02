@@ -1,4 +1,5 @@
 import { ref, reactive } from 'vue'
+import { projectAPI, configAPI, scenarioAPI, simulationAPI } from '../services/apiService'
 
 // 應用程式狀態
 export const currentView = ref('landing')
@@ -32,25 +33,15 @@ export const iterationType = ref('')
 export const activeConfigTab = ref('machine')
 export const activeResultTab = ref('summary')
 
-// 靜態數據
-export const projects = ref([
-  { id: 'PRJ-001', name: '航太零件 A' },
-  { id: 'PRJ-002', name: '汽車零件 B' },
-  { id: 'PRJ-003', name: '醫療器材 C' }
-])
+// 動態數據 - 從API獲取
+export const projects = ref([])
+export const recentScenarios = ref([])
+export const simulations = ref([])
+export const machines = ref([])
 
-export const recentScenarios = ref([
-  { id: 'SCN-001', name: '汽車零件加工專案', project: 'PRJ-001', date: '2024-01-15', type: '專案', status: 'completed', version: '1.2', completion: '92' },
-  { id: 'SCN-002', name: '航空零件製造專案', project: 'PRJ-002', date: '2024-01-14', type: '專案', status: 'running', version: '2.1', completion: '88' },
-  { id: 'SCN-003', name: '精密模具專案', project: 'PRJ-001', date: '2024-01-13', type: '專案', status: 'completed', version: '1.0', completion: '95' }
-])
-
-export const simulations = ref([
-  { id: 'SIM-001', name: '批次處理 A', project: 'PRJ-001', status: 'completed', created: '2024-01-15' },
-  { id: 'SIM-002', name: '品質測試 B', project: 'PRJ-002', status: 'running', created: '2024-01-14' },
-  { id: 'SIM-003', name: '效能測試 C', project: 'PRJ-003', status: 'failed', created: '2024-01-13' },
-  { id: 'SIM-004', name: '負載測試 D', project: 'PRJ-001', status: 'pending', created: '2024-01-12' }
-])
+// 加載狀態
+export const isLoading = ref(false)
+export const error = ref(null)
 
 // 配置標籤頁
 export const configTabs = ref([
@@ -71,4 +62,84 @@ export const resultTabs = ref([
 ])
 
 // 當前場景
-export const currentScenario = ref(null) 
+export const currentScenario = ref(null)
+
+// API 數據加載函數
+export const loadProjects = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await projectAPI.getProjects()
+    projects.value = response.projects || []
+  } catch (error) {
+    console.error('Failed to load projects:', error)
+    error.value = 'Failed to load projects'
+    projects.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+export const loadMachines = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await configAPI.getMachineConfig()
+    machines.value = response.machines || []
+  } catch (error) {
+    console.error('Failed to load machines:', error)
+    error.value = 'Failed to load machines'
+    machines.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+export const loadScenarios = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await scenarioAPI.getScenarios()
+    recentScenarios.value = response.scenarios || []
+  } catch (error) {
+    console.error('Failed to load scenarios:', error)
+    error.value = 'Failed to load scenarios'
+    recentScenarios.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+export const loadSimulations = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await simulationAPI.getSimulations()
+    simulations.value = response.simulations || []
+  } catch (error) {
+    console.error('Failed to load simulations:', error)
+    error.value = 'Failed to load simulations'
+    simulations.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// 初始化數據
+export const initializeData = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+    await Promise.all([
+      loadProjects(),
+      loadMachines(),
+      loadScenarios(),
+      loadSimulations()
+    ])
+  } catch (error) {
+    console.error('Failed to initialize data:', error)
+    error.value = 'Failed to initialize data'
+  } finally {
+    isLoading.value = false
+  }
+} 

@@ -7,7 +7,7 @@ mock_simulations = [
     {
         "id": "SIM-001",
         "name": "批次處理 A",
-        "project": "PRJ-001",
+        "project": "X1111-CNC2",
         "status": "completed",
         "created": "2024-01-15",
         "config": {"batch_size": 100, "quality_check": True}
@@ -15,7 +15,7 @@ mock_simulations = [
     {
         "id": "SIM-002",
         "name": "品質測試 B",
-        "project": "PRJ-002", 
+        "project": "DM-CNC5",
         "status": "running",
         "created": "2024-01-14",
         "config": {"test_type": "quality", "samples": 50}
@@ -23,15 +23,15 @@ mock_simulations = [
     {
         "id": "SIM-003",
         "name": "效能測試 C",
-        "project": "PRJ-003",
-        "status": "failed", 
+        "project": "TG-CNC6",
+        "status": "failed",
         "created": "2024-01-13",
         "config": {"test_type": "performance", "duration": 3600}
     },
     {
         "id": "SIM-004",
         "name": "負載測試 D",
-        "project": "PRJ-001",
+        "project": "X1111-CNC2",
         "status": "pending",
         "created": "2024-01-12",
         "config": {"test_type": "load", "concurrent_users": 100}

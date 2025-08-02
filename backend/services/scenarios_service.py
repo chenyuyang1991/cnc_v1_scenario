@@ -7,7 +7,7 @@ mock_scenarios = [
     {
         "id": "SCN-001",
         "name": "汽車零件加工專案",
-        "project": "PRJ-001",
+        "project": "X1111-CNC2",
         "date": "2024-01-15",
         "type": "專案",
         "status": "completed",
@@ -16,8 +16,8 @@ mock_scenarios = [
     },
     {
         "id": "SCN-002",
-        "name": "航空零件製造專案", 
-        "project": "PRJ-002",
+        "name": "航空零件製造專案",
+        "project": "DM-CNC5",
         "date": "2024-01-14",
         "type": "專案",
         "status": "running",
@@ -27,7 +27,7 @@ mock_scenarios = [
     {
         "id": "SCN-003",
         "name": "精密模具專案",
-        "project": "PRJ-001", 
+        "project": "X1111-CNC2",
         "date": "2024-01-13",
         "type": "專案",
         "status": "completed",

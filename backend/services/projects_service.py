@@ -5,22 +5,22 @@ import uuid
 
 mock_projects = [
     {
-        "id": "PRJ-001",
-        "name": "航太零件 A",
+        "id": "X1111-CNC2",
+        "name": "",
         "description": "高精度航太零件加工專案",
         "created": "2024-01-15T10:30:00Z",
         "status": "active"
     },
     {
-        "id": "PRJ-002", 
-        "name": "汽車零件 B",
+        "id": "DM-CNC5", 
+        "name": "",
         "description": "汽車引擎零件製造專案",
         "created": "2024-01-14T09:15:00Z",
         "status": "active"
     },
     {
-        "id": "PRJ-003",
-        "name": "醫療器材 C", 
+        "id": "TG-CNC6",
+        "name": "", 
         "description": "醫療設備精密零件專案",
         "created": "2024-01-13T14:20:00Z",
         "status": "active"
@@ -38,7 +38,7 @@ def get_project_by_id(project_id: str) -> Optional[Project]:
 
 def create_new_project(project_data: ProjectCreate) -> Project:
     new_project = {
-        "id": f"PRJ-{str(uuid.uuid4())[:8].upper()}",
+        "id": f"X{str(uuid.uuid4())[:4].upper()}-CNC{str(uuid.uuid4())[:2].upper()}",
         "name": project_data.name,
         "description": project_data.description or "",
         "created": datetime.utcnow().isoformat() + "Z",
