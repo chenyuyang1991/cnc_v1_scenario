@@ -1,0 +1,44 @@
+# 進給率(Feed Rate)預測模型配置
+
+# 數據處理參數
+data_processing:
+  train_clampings: ['mac1/X2867-CNC2', 'mac3/Diamond-Cell-CNC5', 'mac3/Diamond-Cell-CNC6', 'mac3/Diamond-Cell-CNC3DY', 'mac1/Lisboa-DH-CNC2', 'mac3/Eve-Cell-CNC5', 'mac3/Eve-Cell-CNC6', 'mac3/Tiga-WF-CNC5']
+  eval_clampings: ['mac1/X2867-CNC2', 'mac3/Diamond-Cell-CNC5', 'mac3/Diamond-Cell-CNC6', 'mac3/Diamond-Cell-CNC3DY', 'mac1/Lisboa-DH-CNC2', 'mac3/Eve-Cell-CNC5', 'mac3/Eve-Cell-CNC6', 'mac3/Tiga-WF-CNC5']
+  # eval_clampings: ['mac1/Lisboa-DH-CNC2', 'mac3/Eve-Cell-CNC5', 'mac3/Eve-Cell-CNC6', 'mac3/Tiga-WF-CNC5']
+  test_clampings: []
+  random_state: 42           # 分割數據的隨機種子
+  scale_features: true       # 是否對特徵進行標準化
+  fill_na_method: 'mean'     # 填充缺失值的方法 ('mean', 'median', 'most_frequent')
+  mrr_filter:                # MRR過濾設置
+    enabled: true            # 是否啟用MRR過濾
+    lower: 0.00              # MRR保留的下界百分位（5%）
+    upper: 1.00              # MRR保留的上界百分位（95%）
+
+# 特徵工程參數
+feature_engineering:
+  use_polynomial: false      # 是否使用多項式特徵
+  poly_degree: 2             # 多項式特徵的次數
+  feature_selection: false   # 是否進行特徵選擇
+  n_selected_features: 16    # 選擇的特徵數量
+
+# 決策樹模型參數
+decision_tree:
+  max_depth: 12              # 樹的最大深度，None表示無限制
+  min_samples_split: 8       # 分裂內部節點所需的最小樣本數
+  min_samples_leaf: 4        # 葉節點所需的最小樣本數
+  max_features: 'sqrt'       # 考慮的最大特徵數，null表示所有特徵
+  criterion: 'mape'          # 衡量分裂質量的函數 ('squared_error', 'friedman_mse', 'absolute_error', 'poisson')
+  splitter: 'best'           # 分裂策略 ('best', 'random')
+  ccp_alpha: 0.02            # 用於最小成本複雜性修剪的複雜度參數
+
+# 模型評估參數
+evaluation:
+  metrics: ['mse', 'rmse', 'mae', 'r2']  # 評估指標
+  cross_validation: true                  # 是否使用交叉驗證
+  cv_folds: 5                            # 交叉驗證的折數
+
+# 預測參數
+prediction:
+  output_format: 'csv'                   # 輸出格式
+  save_predictions: true                 # 是否保存預測結果
+  output_path: 'predictions/'            # 預測結果保存路徑

@@ -1,0 +1,176 @@
+department: "mac1"
+clamping_name: 'Lisboa-HD-CNC2'
+scenario_name: "test"
+
+path:
+  dir_app: "../app/{department}/simulation_master"
+  dir_intermediate: "../cnc_intermediate"
+  dir_simulation: "simulation/latest/"
+  master_path: "product_master.xlsx"
+  program_segments_path: "program_segments.xlsx"
+  main_func_path: "O6401.txt"
+  tool_path: "tools.xlsx"
+  machine_macro_path: "nc_code/macro/宏變量數據.xlsx"
+  init_macro_code_path: "nc_code/macro/init_macro.txt"
+  dir_gcode: 'nc_code/raw'
+  dir_macro: 'nc_code/macro'
+  dir_parsed: 'nc_code/parsed'
+  dir_parsed_line: 'nc_code/parsed/parsed_code_line.xlsx'
+  dir_parsed_command: 'nc_code/parsed/parsed_command.xlsx'
+  dir_templates: 'nc_code/templates'
+
+  dir_machine_data: '../cnc_data/nc_code/{folder}/programs.txt'
+  dir_machine_folder: '製工標準' # default
+
+output_path:
+  calc_time: "v1_output/01_calc_time/"
+  calc_load: "v1_output/02_calc_load/"
+  adjust_feed_rate: "v1_output/03_adjust_feed_rate/"
+  generate_code: "v1_output/04_generate_code/"
+
+hyper_params:
+  use_cnc_knowledge_base: true # 是否使用CNC知識庫預測倍率
+  percentile_threshold: 0.95
+  short_threshold: 0.2 # mac3 0.2 | mac1 0.3
+  ae_thres: 0.1
+  ap_thres: 0.1
+  turning_G01_thres: 0.5
+  pre_turning_thres: 1
+  multiplier_max: 1.5
+  multiplier_min: 1
+  multiplier_air: 2
+  apply_finishing: 1
+  apply_ban_n: 1
+  multiplier_finishing: 1.2
+  target_pwc_strategy: "按刀具"
+
+  max_increase_step: 2000 # 2000
+  min_air_speed: 0 # 5000
+  max_air_speed: 48000 # 10000
+
+output_cols: [
+#   'index',
+#   'sub_program_seq',
+  'sub_program',
+  'sub_program_key',
+  'function',
+  'real_ct',
+  'simulated_ct',
+  'row_id',
+  'src',
+  'command',
+  'coordinates_abs/rel',
+  'coordinates_sys',
+  'unit',
+  'precision_mode',
+  'move_code',
+  'move_code_prev',
+  'O',
+  'N',
+  'G',
+  'M',
+  'X',
+  'Y',
+  'Z',
+  'X_prev',
+  'Y_prev',
+  'Z_prev',
+  'X_prev_prev',
+  'Y_prev_prev',
+  'Z_prev_prev',
+  'X_pixel',
+  'Y_pixel',
+  'Z_pixel',
+  'X_prev_pixel',
+  'Y_prev_pixel',
+  'Z_prev_pixel',
+  'S',
+  'F',
+  'S_prev',
+  'F_prev',
+  'T',
+  'H',
+  'D',
+  'I',
+  'J',
+  'K',
+  'A',
+  'B',
+  'C',
+#  'command_code',
+#  'code_id',
+  'tool_diameter',
+  'tool_height',
+#  'tool_slack',
+  'cutting_area',
+  'same_start_end_pixel',
+  'is_valid',
+  'hit_area',
+  'is_valid_slack',
+  'hit_area_slack',
+  'ap_max_over_xy',
+  'ap_sum_voxel',
+  'path_area_xy',
+  'hit_area_xy',
+  'ap_avg_over_hit',
+  'ap_avg_over_path',
+  'hit_ratio_xy',
+  'ae_max_over_z',
+  'ae_sum_voxel',
+  'path_area_z',
+  'hit_area_z',
+  'ae_avg_over_hit',
+  'ae_avg_over_path',
+  'hit_ratio_z',
+  'simulation_time_used',
+  'radius_pixel',
+  'angle_start_pixel',
+  'angle_end_pixel',
+  'arc_pixel',
+  'turning_angle',
+  'path_length',
+  'acc_time',
+  'acc_dist',
+  'const_time',
+  'const_dist',
+  'acc/dec',
+  'time_physical',
+  'time_physical_acc',
+  'time_tool_change',
+  'time_spindle_acc',
+  'time_turning',
+  'ap_mm',
+  'ae_mm',
+  'MRR',
+  'cutting_speed_vc',
+  'power_pc',
+  'torque_mc',
+  'is_finishing',
+  'is_finishing_outer',
+  'is_finishing_inner',
+  # 'validness_group_id',
+  'continuous_duration',
+  'continuous_num_lines',
+  'is_short_duration',
+  'is_curve_start',
+  'is_spiral',
+  'is_ban_n',
+  'multiplier_max',
+  'multiplier_min',
+  'multiplier_air',
+  'multiplier_finishing',
+  'multiplier_actual',
+  'target_power_pc',
+  'apply_subprogram_air',
+  'apply_subprogram_afc',
+  'is_turning',
+  'is_pre_turning',
+  'is_banned_turning',
+  'apply_turning',
+  'apply_air',
+  'apply_afc',
+  'apply',
+  'F_adjusted',
+  'time_physical_adjusted',
+  'time_physical_improved',
+]

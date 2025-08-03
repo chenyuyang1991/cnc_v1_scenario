@@ -1,0 +1,119 @@
+hyper_params:
+  percentile_threshold: 0.95
+  short_threshold: 0.4
+  ae_thres: 0.5
+  ap_thres: 0.1
+  multiplier_max: 1.3
+  multiplier_min: 1
+  multiplier_air: 2
+  apply_finishing: 1
+  apply_ban_n: 1
+  multiplier_finishing: 1.2
+  #  rapid_speed:
+
+sub_programs:
+  '5601':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: ['N20','N30','N40','N50','N60']
+  '5202':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 0  # 加速两倍3500->7000出现缺陷，非空切，可能是Z slack问题（开粗有机会救回来）
+    ban_n: ['N0010']
+  '5214':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5615':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5516':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: ['N80','N90']
+  '5603':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5504':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5206':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: ['N0030']
+  '5607':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5617':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: ['N10','N20','N30']
+  '5647':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5208':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5210':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5238':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+    ban_n: []
+  '5211':
+    finishing: 0
+    apply_afc: 0  # 有缺陷 关闭
+    apply_air: 0  # 有缺陷 关闭
+    ban_n: []
+  '5232':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 0  # 其实只有N0010的空切需要ban，N0020有一段空切有效
+    ban_n: ['N0010']
+  '5231':
+    finishing: 1
+    apply_afc: 0 # 之前提升过
+    apply_air: 0 # 已驗證無空切
+    ban_n: []
+  '5244':
+    finishing: 1
+    apply_afc: 0 # 之前提升过
+    apply_air: 0 # 已驗證無空切
+    ban_n: []
+  '5234':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 0 # 已驗證無空切
+    ban_n: []
+  '5218':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 0 # 已驗證無空切
+    ban_n: ['N0010']
+  '5519':
+    finishing: 1
+    apply_afc: 0  # 陶瓷刷不加速
+    apply_air: 1
+    ban_n: ['N10','N30','N60', 'N120','N150']

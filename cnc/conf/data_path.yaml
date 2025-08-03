@@ -1,0 +1,13 @@
+dir: "../cnc_data/"
+dir_intermediate: "../cnc_intermediate/"
+
+ct_log: "1214data batch/CT 日誌-1214-7天.xlsx"
+ct_log_202411: "1203data batch/CT 日誌.xlsx"
+machine_mapper: "1202data batch/main_mapper.xlsx"
+machine_scope: ["1202data batch/設備信息Mac1.xlsx","1202data batch/設備信息MacIII.xlsx"]
+
+#machine_experiment_sensor_opt: "1227data batch/172.16.182.34_202412271000.txt"
+#machine_experiment_sensor: "1227data batch/172.16.182.34_202412270900.txt"
+
+machine_experiment_sensor_opt: "1227data batch/MitsubshiTest.txt"
+machine_experiment_sensor: "0115data batch/MitsubshiTest_20250114.txt"

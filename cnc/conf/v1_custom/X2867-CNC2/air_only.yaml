@@ -1,0 +1,97 @@
+hyper_params:
+  percentile_threshold: 0.7
+  short_threshold: 0.5
+  ae_thres: 0.5
+  ap_thres: 0.1
+  multiplier_max: 1
+  multiplier_min: 1
+  multiplier_air: 2
+  apply_finishing: 0
+  multiplier_finishing: 1
+  #  rapid_speed:
+
+sub_programs:
+  '5601':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5202':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1  # 璨哥说不是，但提升后无缺陷
+  '5214':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5615':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5516':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5603':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5504':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1  # 璨哥说不是空切，但提升后无缺陷
+  '5206':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5607':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5617':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5647':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5208':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5210':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5238':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1
+  '5211':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 1
+  '5232':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 1 # 璨哥说前四块不是空切，，但提升后无缺陷
+  '5231':
+    finishing: 1
+    apply_afc: 0 # 之前提升过
+    apply_air: 0 # 已驗證無空切
+  '5244':
+    finishing: 1
+    apply_afc: 0 # 之前提升过
+    apply_air: 0 # 已驗證無空切
+  '5234':
+    finishing: 1
+    apply_afc: 1
+    apply_air: 0 # 已驗證無空切
+  '5218':
+    finishing: 0
+    apply_afc: 1
+    apply_air: 0 # 已驗證無空切
+  '5519':
+    finishing: 1
+    apply_afc: 0  # 陶瓷刷不加速
+    apply_air: 1
