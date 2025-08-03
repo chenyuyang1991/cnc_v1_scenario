@@ -1,0 +1,54 @@
+python_files:
+
+  #- src/util.py
+  - src/viz_cnc_path.py
+  - src/data_proc.py
+
+  - src/simulation/calculate_gpu.py
+  - src/simulation/calculate.py
+  - src/simulation/colors.py
+  - src/simulation/contours.py
+  - src/simulation/cutting.py
+  - src/simulation/cutting_new.py
+  - src/simulation/rotate_coordinates.py
+  - src/simulation/rotating.py
+  - src/simulation/simulate_new.py
+  - src/simulation/simulate.py
+  - src/simulation/utils.py
+
+  #- src/code_parsing/code_parsing.py
+  #- src/code_parsing/extract_patterns.py
+  #- src/code_parsing/generate_template.py
+  #- src/code_parsing/macro.py
+  #- src/code_parsing/models.py
+  #- src/code_parsing/utils.py
+
+  #- src/utils/convert_txt_to_json.py
+  #- src/utils/utils.py
+
+  #- src/v1_algo/adjust_feed_rate.py
+  #- src/v1_algo/calculate_load_time.py
+  #- src/v1_algo/generate_nc_code.py
+  #- src/v1_algo/load_analysis.py
+  #- src/v1_algo/predict_feed_rate.py
+  #- src/v1_algo/experiment_data_proc/data_prep.py
+
+  - src/data_proc/ct_proc.py
+  - src/data_proc/match_sensor_data.py
+  - src/data_proc/sensor_proc.py
+
+  - demo_ui/app.py
+  - demo_ui/code_diff_view.py
+  - demo_ui/config_section_rerun.py
+  - demo_ui/config_tabs.py
+  - demo_ui/conf_init.py
+  - demo_ui/image_annotation.py
+  - demo_ui/login.py
+  - demo_ui/processing.py
+  - demo_ui/styles.py
+  - demo_ui/summary_display.py
+  - demo_ui/simulation/create_simulation.py
+  - demo_ui/simulation/simulation_dashboard.py
+  - demo_ui/simulation/simulation.py
+
+  - auth/auth.py
