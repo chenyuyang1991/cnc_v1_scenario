@@ -1,0 +1,46 @@
+account_name:
+  mac1:
+    access_level:
+      - D05-1
+      - D06-1
+      - D06-2
+    password: adminmac1
+  mac3:
+    access_level:
+      - B05-2
+      - B05-3
+      - B07-1
+      - B05-1
+    password: adminmac3
+  b05-2:
+    access_level:
+      - B05-2
+    password: password
+  b05-3:
+    access_level:
+      - B05-3
+    password: password
+  b07-1:
+    access_level:
+      - B07-1
+    password: password
+  b05-1:
+    access_level:
+      - B05-1
+    password: password
+  d05-1:
+    access_level:
+      - D05-1
+    password: password
+  d06-1:
+    access_level:
+      - D06-1
+    password: password
+  d06-2:
+    access_level:
+      - D06-2
+    password: password
+  admin:
+    access_level:
+      - admin
+    password: admin
