@@ -1,0 +1,13 @@
+{
+  "process_id": 13564,
+  "username": "admin",
+  "start_time": "2025/08/02 09:23:17",
+  "start_timestamp": 1754097797.444252,
+  "finish_flag": true,
+  "finish_time": "2025/08/02 09:26:14",
+  "finish_timestamp": 1754097974.979778,
+  "cmd": "python -u cnc_genai/demo_ui/run_optimization_async.py --config_path ../app/other/scenario/025-test3-CNC6_製工標準_首次實驗_2025-08-02 0919\\optimization_config.json --output_path ../app/other/scenario/025-test3-CNC6_製工標準_首次實驗_2025-08-02 0919\\optimization_result.joblib",
+  "scenario_name": "030-test-CNC6_製工標準_首次實驗_2025-08-02 0923",
+  "success": true,
+  "error": null
+}
