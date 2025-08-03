@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D STL 檢視器</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #viewer-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- Three.js 核心庫和擴展 -->
+    <script src="three_js_component/three.min.js"></script>
+    <script src="three_js_component/OrbitControls.js"></script>
+    <script src="three_js_component/STLLoader.js"></script>
+    
+    <!-- 引入 Stats.js 模組並立即初始化 -->
+    <script type="module">
+        import Stats from './three_js_component/stats.module.js';
+        
+        // 將 Stats 添加到全域作用域
+        window.Stats = Stats;
+        
+        // 立即初始化全域效能監視器
+        window.globalStats = new Stats();
+        window.globalStats.showPanel(0); // 0: FPS, 1: ms, 2: mb
+        
+        // 設置樣式
+        window.globalStats.dom.style.position = 'absolute';
+        window.globalStats.dom.style.left = '0px';
+        window.globalStats.dom.style.top = '0px';
+        window.globalStats.dom.style.zIndex = '10000';
+        window.globalStats.dom.style.display = 'none'; // 預設隱藏
+        
+        // 初始化效能監視器的函數
+        window.initPerformanceMonitor = function() {
+            if (window.globalStats && !window.globalStats.dom.parentNode) {
+                // 添加到容器
+                const container = document.getElementById('viewer-container');
+                if (container) {
+                    container.appendChild(window.globalStats.dom);
+                    console.log('[效能監視器] Stats.js 已添加到容器');
+                }
+                
+                // 點擊切換面板
+                window.globalStats.dom.addEventListener('click', () => {
+                    const currentPanel = parseInt(window.globalStats.dom.getAttribute('data-panel') || '0');
+                    const nextPanel = (currentPanel + 1) % 3;
+                    window.globalStats.showPanel(nextPanel);
+                    window.globalStats.dom.setAttribute('data-panel', nextPanel);
+                    console.log('[效能監視器] 切換到面板:', nextPanel);
+                });
+            }
+        };
+        
+        // 切換效能監視器顯示/隱藏
+        window.togglePerformanceMonitor = function() {
+            if (window.globalStats) {
+                const isVisible = window.globalStats.dom.style.display !== 'none';
+                window.globalStats.dom.style.display = isVisible ? 'none' : 'block';
+                console.log('[效能監視器]', isVisible ? '已隱藏' : '已顯示');
+            }
+        };
+        
+        // 顯示效能監視器
+        window.showPerformanceMonitor = function() {
+            if (window.globalStats) {
+                window.globalStats.dom.style.display = 'block';
+                console.log('[效能監視器] 已顯示');
+            }
+        };
+        
+        // 隱藏效能監視器
+        window.hidePerformanceMonitor = function() {
+            if (window.globalStats) {
+                window.globalStats.dom.style.display = 'none';
+                console.log('[效能監視器] 已隱藏');
+            }
+        };
+        
+        console.log('[Stats.js] 模組已載入，全域 Stats 已初始化');
+    </script>
+    
+    <!-- 自定義 3D 檢視器組件 -->
+    <script src="three_js_component/three-d-model-viewer.js"></script>
+    
+    <!-- 主要檢視器容器 -->
+    <div id="viewer-container"></div>
+
+    <script>
+        // Streamlit 通訊函數
+        function sendMessageToStreamlitClient(type, data) {
+            var outData = Object.assign(
+                {
+                    isStreamlitMessage: true,
+                    type: type,
+                },
+                data
+            );
+            window.parent.postMessage(outData, "*");
+        }
+
+        function init() {
+            // 延遲初始化確保所有模組載入完成
+            setTimeout(() => {
+                window.initPerformanceMonitor();
+                console.log('[初始化] 效能監視器初始化完成');
+            }, 200);
+            
+            sendMessageToStreamlitClient("streamlit:componentReady", {
+                apiVersion: 1,
+            });
+        }
+
+        function setFrameHeight(height) {
+            sendMessageToStreamlitClient("streamlit:setFrameHeight", {
+                height: height,
+            });
+        }
+
+        function sendDataToPython(data) {
+            sendMessageToStreamlitClient("streamlit:setComponentValue", data);
+        }
+
+        // 處理來自 Python 的資料
+        function onDataFromPython(event) {
+            // 只處理來自 Streamlit 的渲染事件，忽略其他所有訊息
+            if (event.data.type !== "streamlit:render") return;
+            
+            // 忽略來自 three-d-model-viewer 組件的內部訊息
+            if (event.data.type === "three-d-viewer-ready" || 
+                event.data.type === "three-d-viewer-error") {
+                console.log('[3D檢視器] 忽略內部組件訊息:', event.data.type);
+                return;
+            }
+            
+            console.log('[3D檢視器] 收到來自 Python 的資料:', event.data.args);
+            
+            let color = event.data.args.color;
+            let file_path = event.data.args.file_path;
+            let material = event.data.args.material;
+            let auto_rotate = event.data.args.auto_rotate;
+            let opacity = event.data.args.opacity;
+            let shininess = event.data.args.shininess;
+            let cam_v_angle = event.data.args.cam_v_angle;
+            let cam_h_angle = event.data.args.cam_h_angle;
+            let cam_distance = event.data.args.cam_distance;
+            let height = event.data.args.height;
+            let max_view_distance = event.data.args.max_view_distance;
+            let show_performance = event.data.args.show_performance;
+            
+            if (height !== undefined) {
+                setFrameHeight(height);
+                console.log('[3D檢視器] 設置高度:', height);
+            }
+
+            // 創建 3D 檢視器
+            console.log('[3D檢視器] 創建檢視器元素');
+            let stlViewer = document.createElement('three-d-model-viewer');
+            stlViewer.setAttribute('model', file_path);
+            stlViewer.setAttribute('color', color);
+            stlViewer.setAttribute('auto_rotate', auto_rotate);
+            stlViewer.setAttribute('materialType', material);
+            stlViewer.setAttribute('opacity', opacity);
+            stlViewer.setAttribute('shininess', shininess);
+            stlViewer.setAttribute('cam_v_angle', cam_v_angle);
+            stlViewer.setAttribute('cam_h_angle', cam_h_angle);
+            stlViewer.setAttribute('cam_distance', cam_distance);
+            stlViewer.setAttribute('max_view_distance', max_view_distance);
+
+            // 清理容器但保留效能監視器
+            let stlFrame = document.getElementById('viewer-container');
+            const statsElement = window.globalStats ? window.globalStats.dom : null;
+            
+            stlFrame.innerHTML = '';
+            stlFrame.appendChild(stlViewer);
+            
+            // 重新添加效能監視器到容器
+            if (statsElement && !statsElement.parentNode) {
+                stlFrame.appendChild(statsElement);
+            }
+            
+            // 根據參數決定是否顯示效能監視器
+            setTimeout(() => {
+                if (show_performance) {
+                    window.showPerformanceMonitor();
+                } else {
+                    window.hidePerformanceMonitor();
+                }
+            }, 300);
+            
+            console.log('[3D檢視器] 檢視器已添加到容器');
+        }
+
+        // 初始化和事件綁定
+        window.addEventListener("message", onDataFromPython);
+        init();
+
+        // 自動設置 iframe 高度
+        window.addEventListener("load", function () {
+            window.setTimeout(function () {
+                setFrameHeight(document.documentElement.clientHeight);
+                console.log('[3D檢視器] 自動設置高度:', document.documentElement.clientHeight);
+            }, 0);
+        });
+    </script>
+</body>
+</html>

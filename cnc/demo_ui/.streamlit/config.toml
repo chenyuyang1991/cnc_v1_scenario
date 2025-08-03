@@ -1,0 +1,6 @@
+[theme]
+base="dark"
+
+[components]
+# 移除 allow-same-origin 來避免沙盒逃脫問題
+#iframeSandbox = "allow-scripts allow-downloads allow-forms"
