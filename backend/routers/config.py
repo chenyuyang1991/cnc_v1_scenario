@@ -1,8 +1,15 @@
 from fastapi import APIRouter, HTTPException, status
 from models.config import MachineConfig, MaterialConfig, ToolingConfig, ConfigSaveRequest
 from services.config_service import get_machine_config, get_material_config, get_tooling_config, save_config
+from services.optimization_service import get_optimization_config
 
 router = APIRouter()
+
+@router.get("/optimization")
+async def get_optimization_config_endpoint():
+    """Get optimization configuration options"""
+    config = get_optimization_config()
+    return config
 
 @router.get("/machine", response_model=MachineConfig)
 async def get_machine_config_endpoint():

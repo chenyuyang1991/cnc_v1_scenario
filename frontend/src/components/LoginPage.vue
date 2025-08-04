@@ -30,10 +30,15 @@
         </div>
         <button 
           type="submit"
-          class="w-full bg-white text-black py-2 rounded font-medium hover:bg-gray-100 transition-colors"
+          :disabled="loading"
+          class="w-full bg-white text-black py-2 rounded font-medium hover:bg-gray-100 disabled:bg-gray-300 transition-colors"
         >
-          登入
+          {{ loading ? '登入中...' : '登入' }}
         </button>
+        
+        <div v-if="error" class="text-red-400 text-center text-sm mt-2">
+          {{ error }}
+        </div>
       </form>
       
       <button 
@@ -64,13 +69,46 @@ const loginForm = reactive({
   password: ''
 })
 
-const handleLogin = () => {
-  if (loginForm.username && loginForm.password) {
-    emit('login', {
+const loading = ref(false)
+const error = ref('')
+
+const handleLogin = async () => {
+  if (!loginForm.username || !loginForm.password) {
+    error.value = '請輸入用戶名和密碼'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+
+  try {
+    const { apiService } = await import('../services/apiService')
+    
+    const response = await apiService.login({
       username: loginForm.username,
       password: loginForm.password,
       platform: props.selectedPlatform
     })
+
+    if (response.access_token) {
+      localStorage.setItem('auth_token', response.access_token)
+      localStorage.setItem('user_info', JSON.stringify(response.user))
+      
+      emit('login', {
+        username: loginForm.username,
+        password: loginForm.password,
+        token: response.access_token,
+        user: response.user,
+        platform: props.selectedPlatform
+      })
+    } else {
+      error.value = '登入失敗，請檢查用戶名和密碼'
+    }
+  } catch (err) {
+    console.error('Login error:', err)
+    error.value = err.message || '登入失敗，請重試'
+  } finally {
+    loading.value = false
   }
 }
-</script> 
+</script>  
