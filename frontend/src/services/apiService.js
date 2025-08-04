@@ -1,262 +1,210 @@
-// API 服務層 - 為 FastAPI 後端集成做準備
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-
-// 通用 API 請求函數
-async function apiRequest(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    ...options
+class ApiService {
+  constructor() {
+    this.baseURL = API_BASE_URL
   }
 
-  try {
-    const response = await fetch(url, config)
+  async request(endpoint, options = {}) {
+    const url = `${this.baseURL}${endpoint}`
+    const token = localStorage.getItem('auth_token')
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers
+      },
+      ...options
     }
-    
-    return await response.json()
-  } catch (error) {
-    console.error('API request failed:', error)
-    throw error
-  }
-}
 
-// 認證相關 API
-export const authAPI = {
-  // 登入
+    try {
+      const response = await fetch(url, config)
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Request failed' }))
+        throw new Error(error.detail || `HTTP ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error(`API request failed: ${endpoint}`, error)
+      throw error
+    }
+  }
+
   async login(credentials) {
-    return apiRequest('/auth/login', {
+    return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials)
     })
-  },
+  }
 
-  // 登出
   async logout() {
-    return apiRequest('/auth/logout', {
-      method: 'POST'
-    })
-  },
+    const result = await this.request('/auth/logout', { method: 'POST' })
+    localStorage.removeItem('auth_token')
+    localStorage.removeItem('user_info')
+    return result
+  }
 
-  // 驗證 token
   async verifyToken() {
-    return apiRequest('/auth/verify')
+    return this.request('/auth/verify')
   }
-}
 
-// 專案相關 API
-export const projectAPI = {
-  // 獲取專案列表
-  async getProjects() {
-    return apiRequest('/projects')
-  },
-
-  // 獲取單個專案
-  async getProject(id) {
-    return apiRequest(`/projects/${id}`)
-  },
-
-  // 創建新專案
-  async createProject(projectData) {
-    return apiRequest('/projects', {
-      method: 'POST',
-      body: JSON.stringify(projectData)
-    })
-  },
-
-  // 更新專案
-  async updateProject(id, projectData) {
-    return apiRequest(`/projects/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(projectData)
-    })
-  },
-
-  // 刪除專案
-  async deleteProject(id) {
-    return apiRequest(`/projects/${id}`, {
-      method: 'DELETE'
-    })
-  }
-}
-
-// 場景相關 API
-export const scenarioAPI = {
-  // 獲取場景列表
-  async getScenarios() {
-    return apiRequest('/scenarios')
-  },
-
-  // 獲取單個場景
-  async getScenario(id) {
-    return apiRequest(`/scenarios/${id}`)
-  },
-
-  // 創建新場景
-  async createScenario(scenarioData) {
-    return apiRequest('/scenarios', {
-      method: 'POST',
-      body: JSON.stringify(scenarioData)
-    })
-  },
-
-  // 更新場景
-  async updateScenario(id, scenarioData) {
-    return apiRequest(`/scenarios/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(scenarioData)
-    })
-  },
-
-  // 迭代場景
-  async iterateScenario(id, iterationData) {
-    return apiRequest(`/scenarios/${id}/iterate`, {
-      method: 'POST',
-      body: JSON.stringify(iterationData)
-    })
-  }
-}
-
-// 模擬相關 API
-export const simulationAPI = {
-  // 獲取模擬列表
-  async getSimulations() {
-    return apiRequest('/simulations')
-  },
-
-  // 獲取單個模擬
-  async getSimulation(id) {
-    return apiRequest(`/simulations/${id}`)
-  },
-
-  // 創建新模擬
-  async createSimulation(simulationData) {
-    return apiRequest('/simulations', {
-      method: 'POST',
-      body: JSON.stringify(simulationData)
-    })
-  },
-
-  // 運行模擬
-  async runSimulation(id) {
-    return apiRequest(`/simulations/${id}/run`, {
-      method: 'POST'
-    })
-  },
-
-  // 獲取模擬結果
-  async getSimulationResults(id) {
-    return apiRequest(`/simulations/${id}/results`)
-  }
-}
-
-// 優化相關 API
-export const optimizationAPI = {
-  // 運行優化
-  async runOptimization(optimizationData) {
-    return apiRequest('/optimization/run', {
-      method: 'POST',
-      body: JSON.stringify(optimizationData)
-    })
-  },
-
-  // 獲取優化結果
-  async getOptimizationResults(id) {
-    return apiRequest(`/optimization/${id}/results`)
-  },
-
-  // 獲取優化配置
-  async getOptimizationConfig() {
-    return apiRequest('/optimization/config')
-  }
-}
-
-// 檔案上傳相關 API
-export const fileAPI = {
-  // 上傳檔案
-  async uploadFile(file, type = 'cnc') {
+  async uploadFile(file) {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('type', type)
-
-    return apiRequest('/files/upload', {
+    
+    return this.request('/files/upload', {
       method: 'POST',
-      headers: {}, // 讓瀏覽器自動設置 Content-Type
+      headers: {},
       body: formData
     })
-  },
+  }
 
-  // 驗證檔案
   async validateFile(fileId) {
-    return apiRequest(`/files/${fileId}/validate`, {
-      method: 'POST'
-    })
-  },
+    return this.request(`/files/${fileId}/validate`, { method: 'POST' })
+  }
 
-  // 下載範本
   async downloadTemplate(type) {
-    return apiRequest(`/files/templates/${type}`, {
-      method: 'GET'
+    const response = await fetch(`${this.baseURL}/files/templates/${type}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+      }
     })
+    
+    if (!response.ok) {
+      throw new Error('Template download failed')
+    }
+    
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `cnc_template.${type === 'excel' ? 'xlsx' : 'csv'}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
   }
-}
 
-// 聊天相關 API
-export const chatAPI = {
-  // 發送消息
-  async sendMessage(message, context = {}) {
-    return apiRequest('/chat/send', {
-      method: 'POST',
-      body: JSON.stringify({ message, context })
-    })
-  },
-
-  // 獲取聊天歷史
-  async getChatHistory(sessionId) {
-    return apiRequest(`/chat/history/${sessionId}`)
+  async getOptimizationConfig() {
+    return this.request('/config/optimization')
   }
-}
 
-// 配置相關 API
-export const configAPI = {
-  // 獲取機台配置
   async getMachineConfig() {
-    return apiRequest('/config/machine')
-  },
+    return this.request('/config/machine')
+  }
 
-  // 獲取材料配置
-  async getMaterialConfig() {
-    return apiRequest('/config/materials')
-  },
+  async getMaterialsConfig() {
+    return this.request('/config/materials')
+  }
 
-  // 獲取刀具配置
   async getToolingConfig() {
-    return apiRequest('/config/tooling')
-  },
+    return this.request('/config/tooling')
+  }
 
-  // 保存配置
-  async saveConfig(configType, configData) {
-    return apiRequest(`/config/${configType}`, {
+  async saveConfig(configData) {
+    return this.request('/config/save', {
       method: 'POST',
       body: JSON.stringify(configData)
     })
   }
+
+  async runOptimization(config) {
+    return this.request('/optimization/run', {
+      method: 'POST',
+      body: JSON.stringify(config)
+    })
+  }
+
+  async getOptimizationStatus(optimizationId) {
+    return this.request(`/optimization/${optimizationId}/status`)
+  }
+
+  async getOptimizationResults(optimizationId) {
+    return this.request(`/optimization/${optimizationId}/results`)
+  }
+
+  async sendChatMessage(message, context = {}) {
+    return this.request('/chat/send', {
+      method: 'POST',
+      body: JSON.stringify({ message, context })
+    })
+  }
+
+  async getChatHistory(sessionId) {
+    return this.request(`/chat/history/${sessionId}`)
+  }
+
+  async getProjects() {
+    return {
+      projects: [
+        { id: 'PRJ-001', name: '航太零件加工', description: '高精度航太零件' },
+        { id: 'PRJ-002', name: '汽車零件製造', description: '大批量汽車零件' },
+        { id: 'PRJ-003', name: '醫療器材', description: '醫療級精密零件' }
+      ]
+    }
+  }
+
+  async getScenarios() {
+    return {
+      scenarios: [
+        {
+          id: 'SCN-001',
+          name: '汽車零件加工專案',
+          project: 'PRJ-002',
+          date: '2024-01-15',
+          status: 'completed',
+          version: '1.2',
+          completion: 92
+        },
+        {
+          id: 'SCN-002', 
+          name: '航空零件製造',
+          project: 'PRJ-001',
+          date: '2024-01-10',
+          status: 'running',
+          version: '2.1',
+          completion: 78
+        }
+      ]
+    }
+  }
 }
 
-// 導出所有 API
-export default {
-  auth: authAPI,
-  project: projectAPI,
-  scenario: scenarioAPI,
-  simulation: simulationAPI,
-  optimization: optimizationAPI,
-  file: fileAPI,
-  chat: chatAPI,
-  config: configAPI
-} 
+export const apiService = new ApiService()
+
+export const projectAPI = {
+  getProjects: () => apiService.getProjects(),
+  createProject: (data) => apiService.createProject(data),
+  updateProject: (id, data) => apiService.updateProject(id, data),
+  deleteProject: (id) => apiService.deleteProject(id)
+}
+
+export const configAPI = {
+  getOptimizationConfig: () => apiService.getOptimizationConfig(),
+  getMachineConfig: () => apiService.getMachineConfig(),
+  getMaterialsConfig: () => apiService.getMaterialsConfig(),
+  getToolingConfig: () => apiService.getToolingConfig(),
+  saveConfig: (data) => apiService.saveConfig(data)
+}
+
+export const scenarioAPI = {
+  getScenarios: () => apiService.getScenarios(),
+  createScenario: (data) => apiService.createScenario(data),
+  updateScenario: (id, data) => apiService.updateScenario(id, data),
+  deleteScenario: (id) => apiService.deleteScenario(id)
+}
+
+export const simulationAPI = {
+  runSimulation: (data) => apiService.runSimulation(data),
+  getSimulationResults: (id) => apiService.getSimulationResults(id),
+  getSimulationStatus: (id) => apiService.getSimulationStatus(id)
+}
+
+export const optimizationAPI = {
+  runOptimization: (data) => apiService.runOptimization(data),
+  getOptimizationResults: (id) => apiService.getOptimizationResults(id),
+  getOptimizationStatus: (id) => apiService.getOptimizationStatus(id)
+}      

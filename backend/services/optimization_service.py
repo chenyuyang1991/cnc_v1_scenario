@@ -167,3 +167,13 @@ def get_optimization_config() -> OptimizationConfig:
     }
     
     return OptimizationConfig(**config)
+
+def get_optimization_status(optimization_id: str) -> Optional[dict]:
+    """Get optimization status"""
+    return {
+        "optimization_id": optimization_id,
+        "status": "completed",
+        "progress": 100,
+        "start_time": datetime.utcnow().isoformat() + "Z",
+        "end_time": datetime.utcnow().isoformat() + "Z"
+    }
